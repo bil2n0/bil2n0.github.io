@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ember & Salt — Menu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FFF3D6;
+    --bg-deep:#FFDF8E;
+    --card:#FFFFFF;
+    --ink:#2A1B12;
+    --ink-soft:#8A7860;
+    --red:#E63946;
+    --red-deep:#C1121F;
+    --yellow:#FFC933;
+    --yellow-deep:#F2A900;
+    --line:#F6E3AE;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  h1,h2,h3,.serif{
+    font-family:'Fraunces',serif;
+    letter-spacing:-0.01em;
+  }
+
+  button{font-family:inherit;}
+  a{color:inherit;}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    background:linear-gradient(160deg, var(--bg-deep) 0%, var(--bg) 65%);
+    border-radius:0 0 40px 40px;
+    padding:44px 24px 32px;
+    position:relative;
+  }
+  .hero-inner{
+    max-width:900px;
+    margin:0 auto;
+    text-align:center;
+    position:relative;
+  }
+  .ig-badge{
+    position:absolute;
+    top:-6px;
+    right:0;
+    width:38px;
+    height:38px;
+    border-radius:50%;
+    background:var(--red);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 4px 10px rgba(198,25,40,0.35);
+    text-decoration:none;
+    transition:transform .15s ease;
+  }
+  .ig-badge:hover{transform:scale(1.08);}
+  .ig-badge svg{width:18px;height:18px;}
+
+  .logo{
+    width:72px;
+    height:72px;
+    margin:0 auto 14px;
+    border-radius:50%;
+    background:linear-gradient(155deg, var(--red), var(--red-deep));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 6px 16px rgba(198,25,40,0.3), 0 0 0 5px #fff, 0 0 0 6px var(--yellow);
+  }
+  .logo span{
+    font-family:'Fraunces',serif;
+    font-weight:700;
+    font-size:1.5rem;
+    color:var(--yellow);
+    letter-spacing:0.02em;
+  }
+
+  .hero h1{
+    font-size:clamp(2.6rem, 7vw, 4rem);
+    font-weight:800;
+    color:var(--red);
+    margin:6px 0 10px;
+    text-shadow:0 3px 0 rgba(0,0,0,0.06);
+  }
+  .hero p.tagline{
+    margin:0 auto 26px;
+    max-width:44ch;
+    color:var(--ink-soft);
+    font-size:0.98rem;
+    line-height:1.5;
+  }
+
+  /* Segmented pill nav */
+  .pillbar{
+    display:inline-flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:6px;
+    background:#ffffffb0;
+    border:1px solid var(--line);
+    padding:6px;
+    border-radius:999px;
+    max-width:100%;
+  }
+  .pillbar button{
+    border:none;
+    background:transparent;
+    color:var(--ink);
+    font-size:0.88rem;
+    font-weight:600;
+    padding:10px 18px;
+    border-radius:999px;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:background .18s ease, color .18s ease;
+  }
+  .pillbar button:hover{background:#fff3d6;}
+  .pillbar button.active{
+    background:var(--red);
+    color:#fff;
+    box-shadow:0 4px 10px rgba(198,25,40,0.28);
+  }
+
+  /* ---------- Grid ---------- */
+  main{
+    max-width:1180px;
+    margin:0 auto;
+    padding:36px 24px 80px;
+  }
+  .category-section{margin-bottom:44px;}
+  .category-section:last-child{margin-bottom:0;}
+  .category-heading{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    margin:0 0 16px;
+    padding-bottom:10px;
+    border-bottom:2px solid var(--yellow);
+  }
+  .category-heading h2{
+    font-size:1.5rem;
+    font-weight:700;
+    margin:0;
+    color:var(--red-deep);
+  }
+  .category-heading .count{
+    font-size:0.8rem;
+    color:var(--ink-soft);
+    font-weight:500;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(230px, 1fr));
+    gap:20px;
+  }
+
+  .card{
+    background:var(--card);
+    border-radius:22px;
+    padding:10px;
+    box-shadow:0 6px 18px rgba(42,27,18,0.08);
+    cursor:pointer;
+    border:none;
+    text-align:left;
+    display:flex;
+    flex-direction:column;
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 10px 24px rgba(42,27,18,0.14);
+  }
+  .card-img{
+    width:100%;
+    aspect-ratio:4/3;
+    border-radius:16px;
+    overflow:hidden;
+    background:var(--bg-deep);
+    flex:none;
+  }
+  .card-img img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  .card-body{padding:14px 6px 8px;}
+  .card-name{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:1.08rem;
+    margin:0 0 4px;
+    color:var(--ink);
+  }
+  .card-desc{
+    margin:0 0 10px;
+    font-size:0.82rem;
+    color:var(--ink-soft);
+    line-height:1.45;
+  }
+  .card-price{
+    font-family:'Fraunces',serif;
+    font-weight:700;
+    font-size:1.05rem;
+    color:var(--red);
+  }
+
+  /* ---------- Detail panel ---------- */
+  .scrim{
+    position:fixed;inset:0;
+    background:rgba(42,27,18,0.45);
+    opacity:0;pointer-events:none;
+    transition:opacity .25s ease;
+    z-index:40;
+  }
+  .scrim.open{opacity:1;pointer-events:auto;}
+
+  .panel{
+    position:fixed;
+    top:0;right:0;
+    height:100%;
+    width:min(440px, 100%);
+    background:var(--bg);
+    border-left:1px solid var(--line);
+    transform:translateX(100%);
+    transition:transform .3s cubic-bezier(.4,0,.2,1);
+    z-index:50;
+    display:flex;
+    flex-direction:column;
+    overflow-y:auto;
+  }
+  .panel.open{transform:translateX(0);}
+
+  .panel-image{
+    width:100%;
+    height:200px;
+    overflow:hidden;
+    background:var(--bg-deep);
+    flex:none;
+  }
+  .panel-image img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  .panel-top{
+    padding:24px 28px 20px;
+    border-bottom:1px solid var(--line);
+    position:relative;
+    background:linear-gradient(135deg, var(--red-deep), var(--red));
+    color:#fff;
+  }
+  .panel-close{
+    position:absolute;
+    top:20px;right:20px;
+    background:none;
+    border:1px solid rgba(255,255,255,0.4);
+    color:#fff;
+    width:32px;height:32px;
+    border-radius:50%;
+    cursor:pointer;
+    font-size:1.1rem;
+    line-height:1;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .panel-close:hover{border-color:var(--yellow);color:var(--yellow);}
+  .panel-top h3{
+    font-size:1.6rem;
+    margin:0 24px 8px 0;
+    color:#fff;
+    font-weight:600;
+  }
+  .panel-top .panel-price{
+    font-family:'Fraunces',serif;
+    color:var(--yellow);
+    font-size:1.15rem;
+    font-weight:700;
+  }
+  .panel-top .panel-desc{
+    margin:12px 0 0;
+    font-size:0.9rem;
+    color:#FBE3E3;
+    line-height:1.55;
+  }
+
+  .panel-body{padding:24px 28px 40px;}
+  .panel-section{margin-bottom:28px;}
+  .panel-section:last-child{margin-bottom:0;}
+  .panel-section h4{
+    font-family:'Inter',sans-serif;
+    font-size:0.72rem;
+    letter-spacing:0.03em;
+    color:var(--red-deep);
+    margin:0 0 12px;
+    font-weight:700;
+  }
+
+  .ingredient-list{
+    list-style:none;
+    margin:0;padding:0;
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .ingredient-list li{
+    font-size:0.85rem;
+    color:var(--ink);
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:5px 12px;
+  }
+
+  .option-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:10px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .option-row:last-child{border-bottom:none;}
+  .option-row .opt-name{font-size:0.92rem;color:var(--ink);}
+  .option-row .opt-extra{
+    font-size:0.78rem;
+    color:var(--red-deep);
+    margin-left:8px;
+    font-weight:600;
+  }
+
+  .toggle-btn{
+    border:1px solid var(--ink-soft);
+    background:#fff;
+    color:var(--ink-soft);
+    border-radius:16px;
+    padding:5px 14px;
+    font-size:0.78rem;
+    cursor:pointer;
+    transition:all .15s ease;
+    min-width:64px;
+  }
+  .toggle-btn[data-state="add"]{border-color:var(--yellow-deep); color:var(--yellow-deep);}
+  .toggle-btn[data-state="add"].active{background:var(--yellow); color:#fff; border-color:var(--yellow-deep);}
+  .toggle-btn[data-state="remove"]{border-color:var(--red); color:var(--red);}
+  .toggle-btn[data-state="remove"].active{background:var(--red); color:#fff; border-color:var(--red-deep);}
+
+  .panel-footer{
+    margin-top:8px;
+    padding-top:20px;
+    border-top:1px solid var(--line);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .panel-footer .total-label{font-size:0.78rem;color:var(--ink-soft);}
+  .panel-footer .total{
+    font-family:'Fraunces',serif;
+    font-size:1.4rem;
+    color:var(--red);
+    font-weight:700;
+  }
+
+  /* ---------- Footer / credit ---------- */
+  footer{
+    max-width:1180px;
+    margin:0 auto;
+    padding:8px 24px 60px;
+    text-align:center;
+  }
+  footer .credit{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    font-size:0.85rem;
+    color:var(--ink-soft);
+    background:#fff;
+    border:1px solid var(--line);
+    padding:10px 18px;
+    border-radius:999px;
+  }
+  footer .credit a{
+    color:var(--red);
+    font-weight:700;
+    text-decoration:none;
+  }
+  footer .credit a:hover{text-decoration:underline;}
+  footer .copyright{
+    margin:14px 0 0;
+    font-size:0.75rem;
+    color:var(--ink-soft);
+    opacity:0.75;
+  }
+
+  /* ---------- Mobile ---------- */
+  @media (max-width: 760px){
+    .hero{padding:36px 18px 26px; border-radius:0 0 28px 28px;}
+    main{padding:28px 16px 60px;}
+    .grid{grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:14px;}
+    .panel{width:100%;}
+  }
+
+  :focus-visible{outline:2px solid var(--red); outline-offset:2px;}
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <a class="ig-badge" href="https://www.instagram.com/its._.billal._/" target="_blank" rel="noopener" aria-label="Instagram">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3.5" y="3.5" width="17" height="17" rx="5" stroke="white" stroke-width="1.8"/>
+        <circle cx="12" cy="12" r="4" stroke="white" stroke-width="1.8"/>
+        <circle cx="17.2" cy="6.8" r="1.1" fill="white"/>
+      </svg>
+    </a>
+    <div class="logo"><span>E&amp;S</span></div>
+    <h1>Ember &amp; Salt</h1>
+    <p class="tagline">Wood-fired Mediterranean cooking. Tap any dish to see what's in it — and make it yours.</p>
+    <nav class="pillbar" id="pillbar"></nav>
+  </div>
+</div>
+
+<main id="menu-main"></main>
+
+<footer>
+  <div class="credit">
+    <span>Made with  by</span>
+    <a href="https://www.instagram.com/its._.billal._/" target="_blank" rel="noopener">@its._.billal._ 🔥</a>
+  </div>
+  <p class="copyright">© 2026 Ember &amp; Salt. All rights reserved.</p>
+</footer>
+
+<div class="scrim" id="scrim"></div>
+<aside class="panel" id="panel">
+  <div class="panel-image">
+    <img id="panel-img" src="" alt="">
+  </div>
+  <div class="panel-top">
+    <button class="panel-close" id="panel-close" aria-label="Close">&times;</button>
+    <h3 id="panel-name"></h3>
+    <div class="panel-price" id="panel-price"></div>
+    <p class="panel-desc" id="panel-desc"></p>
+  </div>
+  <div class="panel-body">
+    <div class="panel-section">
+      <h4>Comes with</h4>
+      <ul class="ingredient-list" id="panel-ingredients"></ul>
+    </div>
+    <div class="panel-section" id="section-remove">
+      <h4>Remove</h4>
+      <div id="panel-removable"></div>
+    </div>
+    <div class="panel-section" id="section-add">
+      <h4>Add on</h4>
+      <div id="panel-addable"></div>
+    </div>
+    <div class="panel-footer">
+      <span class="total-label">Your total</span>
+      <span class="total" id="panel-total"></span>
+    </div>
+  </div>
+</aside>
+
+<script>
+const MENU = [
+  {
+    category: "Starters",
+    items: [
+      {
+        name: "Charred Octopus",
+        price: 16,
+        desc: "Grilled octopus, smoked paprika oil, crisp potato.",
+        img: "https://images.pexels.com/photos/921361/pexels-photo-921361.jpeg?auto=compress&cs=tinysrgb&w=800",
+        ingredients: ["Octopus", "Smoked paprika oil", "Potato", "Lemon", "Parsley"],
+        removable: ["Potato", "Lemon", "Parsley"],
+        addable: [
+          { name: "Extra octopus", price: 6 },
+          { name: "Chili crumb", price: 1.5 }
+        ]
+      },
+      {
+        name: "Whipped Feta & Honey",
+        price: 11,
+        desc: "Whipped feta, hot honey, walnut, grilled sourdough.",
+        img: "https://images.pexels.com/photos/6128854/pexels-photo-6128854.jpeg?auto=compress&cs=tinysrgb&w=800",
+        ingredients: ["Feta", "Hot honey", "Walnut", "Sourdough", "Thyme"],
+        removable: ["Walnut", "Hot honey", "Thyme"],
+        addable: [
+          { name: "Extra sourdough", price: 2 },
+          { name: "Fig", price: 2.5 }
+        ]
+      },
+      {
+        name: "Ember Hummus",
+        price: 9,
+        desc: "Slow-roasted chickpea hummus, burnt butter, flatbread.",
+        img: "https://images.pexels.com/photos/6327663/pexels-photo-6327663.jpeg?auto=compress&cs=tinysrgb&w=800",
+        ingredients: ["Chickpeas", "Tahini", "Burnt butter", "Flatbread", "Sumac"],
+        removable: ["Burnt butter", "Sumac"],
+        addable: [
+          { name: "Grilled lamb topping", price: 5 },
+          { name: "Extra flatbread", price: 2 }
+        ]
+      }
+    ]
+  },
+  {
+    category: "From the Grill",
+    items: [
+      {
+        name: "Lamb Shoulder Skewers",
+        price: 27,
+        desc: "Marinated lamb shoulder, charred onion, herb yogurt.",
+        img: "https://images.pexels.com/photos/2233730/pexels-photo-2233730.jpeg?auto=compress&cs=tinysrgb&w=800",
+        ingredients: ["Lamb shoulder", "Charred onion", "Herb yogurt", "Sumac onions", "Mint"],
+        removable: ["Herb yogurt", "Sumac onions", "Mint"],
+        addable: [
+          { name: "Extra skewer", price: 9 },
+          { name: "Grilled halloumi", price: 4 }
+        ]
+      },
+      {
+        name: "Whole Grilled Branzino",
+        price: 32,
+        desc: "Salt-crusted branzino, charred lemon, olive salsa.",
+        img: "https://images.pexels.com/photos/11653557/pexels-photo-11653557.jpeg?auto=compress&cs=tinysrgb&w=800",
+        ingredients: ["Branzino", "Olive salsa", "Charred lemon", "Fennel", "Sea salt crust"],
+        removable: ["Olive salsa", "Fennel"],
+        addable: [
+          { name: "Side of grilled greens", price: 6 },
+          { name: "Extra olive salsa", price: 2 }
+        ]
+      },
+      {
+        name: "Coal-Roasted Ribeye",
+        price: 42,
+        desc: "28-day aged ribeye, bone marrow butter, charred scallion.",
+        img: "https://images.pexels.com/photos/8753745/pexels-photo-8753745.jpeg?auto=compress&cs=tinysrgb&w=800",
+        ingredients: ["Ribeye (28-day aged)", "Bone marrow butter", "Charred scallion", "Flaky salt"],
+        removable: ["Bone marrow butter", "Charred scallion"],
+        addable: [
+          { name: "Peppercorn sauce", price: 3 },
+          { name: "Grilled king oyster mushroom", price: 5 }
+        ]
+      }
+    ]
+  },
+  {
+    category: "Mains",
+    items: [
+      {
+        name: "Saffron Seafood Rice",
+        price: 24,
+        desc: "Bomba rice, prawn, mussel, squid, saffron broth.",
+        img: "https://images.pexels.com/photos/16743489/pexels-photo-16743489.jpeg?auto=compress&cs=tinysrgb&w=800",
+        ingredients: ["Bomba rice", "Prawn", "Mussels", "Squid", "Saffron broth", "Peas"],
+        removable: ["Mussels", "Squid", "Peas"],
+        addable: [
+          { name: "Extra prawns", price: 7 },
+          { name: "Chorizo", price: 4 }
+        ]
+      },
+      {
+        name: "Charred Cauliflower Steak",
+        price: 19,
+        desc: "Whole roasted cauliflower, tahini, pomegranate, herb oil.",
+        img: "https://images.pexels.com/photos/6465974/pexels-photo-6465974.jpeg?auto=compress&cs=tinysrgb&w=800",
+        ingredients: ["Cauliflower", "Tahini", "Pomegranate", "Herb oil", "Pine nuts"],
+        removable: ["Pomegranate", "Pine nuts"],
+        addable: [
+          { name: "Grilled halloumi", price: 4 },
+          { name: "Extra tahini", price: 1.5 }
+        ]
+      }
+    ]
+  },
+  {
+    category: "Desserts",
+    items: [
+      {
+        name: "Burnt Basque Cheesecake",
+        price: 10,
+        desc: "Caramelized crust, molten center, sea salt.",
+        img: "https://images.pexels.com/photos/6607325/pexels-photo-6607325.jpeg?auto=compress&cs=tinysrgb&w=800",
+        ingredients: ["Cream cheese", "Caramelized sugar", "Sea salt", "Vanilla"],
+        removable: ["Sea salt"],
+        addable: [
+          { name: "Berry compote", price: 2 },
+          { name: "Espresso shot", price: 3 }
+        ]
+      },
+      {
+        name: "Grilled Peach & Honey",
+        price: 9,
+        desc: "Fire-grilled peach, mascarpone, thyme honey, pistachio.",
+        img: "https://images.pexels.com/photos/27429847/pexels-photo-27429847.jpeg?auto=compress&cs=tinysrgb&w=800",
+        ingredients: ["Peach", "Mascarpone", "Thyme honey", "Pistachio"],
+        removable: ["Pistachio", "Thyme honey"],
+        addable: [
+          { name: "Vanilla gelato scoop", price: 3 }
+        ]
+      }
+    ]
+  },
+  {
+    category: "Drinks",
+    items: [
+      {
+        name: "Smoked Old Fashioned",
+        price: 14,
+        desc: "Bourbon, charred orange, applewood smoke, bitters.",
+        img: "https://images.pexels.com/photos/29707925/pexels-photo-29707925.jpeg?auto=compress&cs=tinysrgb&w=800",
+        ingredients: ["Bourbon", "Charred orange", "Bitters", "Sugar"],
+        removable: ["Sugar"],
+        addable: [
+          { name: "Extra smoke infusion", price: 2 }
+        ]
+      },
+      {
+        name: "Pomegranate Spritz",
+        price: 11,
+        desc: "Pomegranate, prosecco, soda, fresh mint.",
+        img: "https://images.pexels.com/photos/8679152/pexels-photo-8679152.jpeg?auto=compress&cs=tinysrgb&w=800",
+        ingredients: ["Pomegranate juice", "Prosecco", "Soda", "Mint"],
+        removable: ["Mint"],
+        addable: [
+          { name: "Extra pomegranate", price: 1.5 }
+        ]
+      }
+    ]
+  }
+];
+
+const pillbar = document.getElementById('pillbar');
+const menuMain = document.getElementById('menu-main');
+
+// Build pill nav: "All" + each category
+const categories = ["All", ...MENU.map(c => c.category)];
+let activeCategory = "All";
+
+categories.forEach(cat => {
+  const btn = document.createElement('button');
+  btn.textContent = cat;
+  if (cat === activeCategory) btn.classList.add('active');
+  btn.addEventListener('click', () => {
+    activeCategory = cat;
+    pillbar.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderGrid();
+  });
+  pillbar.appendChild(btn);
+});
+
+function renderGrid(){
+  menuMain.innerHTML = '';
+  const sections = activeCategory === "All" ? MENU : MENU.filter(c => c.category === activeCategory);
+
+  sections.forEach(cat => {
+    const section = document.createElement('div');
+    section.className = 'category-section';
+
+    const heading = document.createElement('div');
+    heading.className = 'category-heading';
+    heading.innerHTML = `<h2>${cat.category}</h2><span class="count">${cat.items.length} dish${cat.items.length > 1 ? 'es' : ''}</span>`;
+    section.appendChild(heading);
+
+    const grid = document.createElement('div');
+    grid.className = 'grid';
+    cat.items.forEach(item => {
+      const card = document.createElement('button');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="card-img"><img src="${item.img}" alt="${item.name}" loading="lazy"></div>
+        <div class="card-body">
+          <p class="card-name">${item.name}</p>
+          <p class="card-desc">${item.desc}</p>
+          <div class="card-price">$${item.price.toFixed(2)}</div>
+        </div>
+      `;
+      card.addEventListener('click', () => openPanel(item));
+      grid.appendChild(card);
+    });
+    section.appendChild(grid);
+    menuMain.appendChild(section);
+  });
+}
+renderGrid();
+
+// ---- Detail panel ----
+const panel = document.getElementById('panel');
+const scrim = document.getElementById('scrim');
+const panelClose = document.getElementById('panel-close');
+
+let currentItem = null;
+let removedSet = new Set();
+let addedSet = new Set();
+
+function openPanel(item){
+  currentItem = item;
+  removedSet = new Set();
+  addedSet = new Set();
+
+  document.getElementById('panel-img').src = item.img;
+  document.getElementById('panel-img').alt = item.name;
+  document.getElementById('panel-name').textContent = item.name;
+  document.getElementById('panel-price').textContent = '$' + item.price.toFixed(2);
+  document.getElementById('panel-desc').textContent = item.desc;
+
+  const ingList = document.getElementById('panel-ingredients');
+  ingList.innerHTML = '';
+  item.ingredients.forEach(ing => {
+    const li = document.createElement('li');
+    li.textContent = ing;
+    ingList.appendChild(li);
+  });
+
+  const removeSection = document.getElementById('section-remove');
+  const removableWrap = document.getElementById('panel-removable');
+  removableWrap.innerHTML = '';
+  if (item.removable && item.removable.length){
+    removeSection.style.display = '';
+    item.removable.forEach(ing => {
+      const row = document.createElement('div');
+      row.className = 'option-row';
+      row.innerHTML = `<span class="opt-name">${ing}</span>`;
+      const btn = document.createElement('button');
+      btn.className = 'toggle-btn';
+      btn.dataset.state = 'remove';
+      btn.textContent = 'Remove';
+      btn.addEventListener('click', () => {
+        btn.classList.toggle('active');
+        if (removedSet.has(ing)) removedSet.delete(ing); else removedSet.add(ing);
+        btn.textContent = btn.classList.contains('active') ? 'Removed' : 'Remove';
+        updateTotal();
+      });
+      row.appendChild(btn);
+      removableWrap.appendChild(row);
+    });
+  } else {
+    removeSection.style.display = 'none';
+  }
+
+  const addSection = document.getElementById('section-add');
+  const addableWrap = document.getElementById('panel-addable');
+  addableWrap.innerHTML = '';
+  if (item.addable && item.addable.length){
+    addSection.style.display = '';
+    item.addable.forEach(opt => {
+      const row = document.createElement('div');
+      row.className = 'option-row';
+      row.innerHTML = `<span class="opt-name">${opt.name}<span class="opt-extra">+$${opt.price.toFixed(2)}</span></span>`;
+      const btn = document.createElement('button');
+      btn.className = 'toggle-btn';
+      btn.dataset.state = 'add';
+      btn.textContent = 'Add';
+      btn.addEventListener('click', () => {
+        btn.classList.toggle('active');
+        if (addedSet.has(opt.name)) addedSet.delete(opt.name); else addedSet.add(opt.name);
+        btn.textContent = btn.classList.contains('active') ? 'Added' : 'Add';
+        updateTotal();
+      });
+      row.appendChild(btn);
+      addableWrap.appendChild(row);
+    });
+  } else {
+    addSection.style.display = 'none';
+  }
+
+  updateTotal();
+  panel.classList.add('open');
+  scrim.classList.add('open');
+}
+
+function updateTotal(){
+  if (!currentItem) return;
+  let total = currentItem.price;
+  currentItem.addable?.forEach(opt => {
+    if (addedSet.has(opt.name)) total += opt.price;
+  });
+  document.getElementById('panel-total').textContent = '$' + total.toFixed(2);
+}
+
+function closePanel(){
+  panel.classList.remove('open');
+  scrim.classList.remove('open');
+}
+
+panelClose.addEventListener('click', closePanel);
+scrim.addEventListener('click', closePanel);
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closePanel();
+});
+</script>
+
+</body>
+</html>
